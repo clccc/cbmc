@@ -1830,8 +1830,11 @@ bool goto_convertt::get_string_constant(
       forall_operands(it, index_op)
         if(it->is_constant())
         {
-          unsigned long i = integer2ulong(
-            bv2integer(id2string(to_constant_expr(*it).get_value()), true));
+          mp_integer int_value;
+          if(to_integer(to_constant_expr(*it), int_value))
+            return true;
+
+          unsigned long i = integer2ulong(int_value);
 
           if(i!=0) // to skip terminating 0
             result+=static_cast<char>(i);

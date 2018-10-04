@@ -86,7 +86,9 @@ static const std::string get_thread_block_identifier(
 {
   PRECONDITION(f_code.arguments().size() == 1);
   const exprt &expr = f_code.arguments()[0];
-  mp_integer lbl_id = bv2integer(expr.op0().get_string(ID_value), false);
+  mp_integer lbl_id;
+  if(to_integer(to_constant_expr(expr.op0()), lbl_id))
+    CHECK_RETURN(false);
   return integer2string(lbl_id);
 }
 
