@@ -674,7 +674,7 @@ bool simplify_exprt::simplify_typecast(exprt &expr)
          expr_type_id==ID_signedbv ||
          expr_type_id==ID_floatbv)
       {
-        mp_integer int_value = bv2integer(id2string(value), false);
+        mp_integer int_value = bv2integer(value, false);
         expr=from_integer(int_value, expr_type);
         return false;
       }
@@ -830,8 +830,8 @@ bool simplify_exprt::simplify_if_implies(
       {
         const mp_integer i1, i2;
         if(
-          bv2integer(cond.op1().get_string(ID_value), false) >=
-          bv2integer(expr.op1().get_string(ID_value), false))
+          bv2integer(cond.op1().get(ID_value), false) >=
+          bv2integer(expr.op1().get(ID_value), false))
         {
           new_truth = true;
           return false;
@@ -841,8 +841,8 @@ bool simplify_exprt::simplify_if_implies(
       {
         const mp_integer i1, i2;
         if(
-          bv2integer(cond.op1().get_string(ID_value), true) >=
-          bv2integer(expr.op1().get_string(ID_value), true))
+          bv2integer(cond.op1().get(ID_value), true) >=
+          bv2integer(expr.op1().get(ID_value), true))
         {
           new_truth = true;
           return false;
@@ -868,8 +868,8 @@ bool simplify_exprt::simplify_if_implies(
       {
         const mp_integer i1, i2;
         if(
-          bv2integer(cond.op1().get_string(ID_value), false) <=
-          bv2integer(expr.op1().get_string(ID_value), false))
+          bv2integer(cond.op1().get(ID_value), false) <=
+          bv2integer(expr.op1().get(ID_value), false))
         {
           new_truth = true;
           return false;
@@ -879,8 +879,8 @@ bool simplify_exprt::simplify_if_implies(
       {
         const mp_integer i1, i2;
         if(
-          bv2integer(cond.op1().get_string(ID_value), true) <=
-          bv2integer(expr.op1().get_string(ID_value), true))
+          bv2integer(cond.op1().get(ID_value), true) <=
+          bv2integer(expr.op1().get(ID_value), true))
         {
           new_truth = true;
           return false;
