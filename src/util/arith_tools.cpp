@@ -14,6 +14,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "std_types.h"
 #include "std_expr.h"
 
+#include <algorithm>
+
 bool to_integer(const exprt &expr, mp_integer &int_value)
 {
   if(!expr.is_constant())
@@ -281,10 +283,31 @@ void mp_max(mp_integer &a, const mp_integer &b)
 /// \param bit_index: index (0 is the least significant)
 bool get_bitvector_bit(const irep_idt &src, std::size_t bit_index)
 {
-  // The representation is binary, using '0'/'1',
-  // most significant bit first.
-  PRECONDITION(bit_index < src.size());
-  return src[src.size() - 1 - bit_index] == '1';
+  // The representation is hex, most significant nibble first.
+  const auto nibble_index = bit_index >> 2;
+
+  if(nibble_index >= src.size())
+    return false;
+
+  char nibble = src[src.size() - 1 - nibble_index];
+
+  DATA_INVARIANT(isxdigit(nibble), "");
+
+  unsigned nibble_value =
+    isdigit(nibble) ? nibble - '0'
+                    : islower(nibble) ? nibble - 'a' + 10 : nibble - 'A' + 10;
+
+  return ((nibble_value >> (bit_index & 3)) & 1) != 0;
+}
+
+static char nibble2hex(unsigned nibble)
+{
+  PRECONDITION(nibble <= 0xf);
+
+  if(nibble >= 10)
+    return 'A' + nibble - 10;
+  else
+    return '0' + nibble;
 }
 
 /// construct a bit-vector representation from a functor
@@ -294,12 +317,36 @@ bool get_bitvector_bit(const irep_idt &src, std::size_t bit_index)
 irep_idt
 make_bvrep(const std::size_t width, const std::function<bool(std::size_t)> f)
 {
-  std::string result(width, ' ');
+  std::string result;
+  result.reserve(width / 4 + 1);
+  unsigned nibble = 0;
 
   for(std::size_t i = 0; i < width; i++)
-    result[width - 1 - i] = f(i) ? '1' : '0';
+  {
+    const auto bit_in_nibble = i % 4;
 
-  return result;
+    nibble |= ((unsigned)f(i)) << bit_in_nibble;
+
+    if(bit_in_nibble == 3)
+    {
+      result += nibble2hex(nibble);
+      nibble = 0;
+    }
+  }
+
+  if(nibble != 0)
+    result += nibble2hex(nibble);
+
+  // drop leading zeros
+  while(!result.empty() && result.back() == '0')
+    result.resize(result.size() - 1);
+
+  std::reverse(result.begin(), result.end());
+
+  if(result.empty())
+    return ID_0;
+  else
+    return result;
 }
 
 /// perform a binary bit-wise operation, given as a functor,
