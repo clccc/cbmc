@@ -248,7 +248,7 @@ bool exprt::is_one() const
     else if(type_id==ID_unsignedbv || type_id==ID_signedbv)
     {
       mp_integer int_value =
-        bv2integer(id2string(constant_expr.get_value()), false);
+        bvrep2integer(constant_expr.get_value(), false);
       if(int_value==1)
         return true;
     }

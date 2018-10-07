@@ -745,7 +745,7 @@ bool simplify_exprt::simplify_bitwise(exprt &expr)
 
     const irep_idt new_value =
       make_bvrep(width, [&a_val, &b_val, &f](std::size_t i) {
-        return f(get_bitvector_bit(a_val, i), get_bitvector_bit(b_val, i));
+        return f(get_bvrep_bit(a_val, i), get_bvrep_bit(b_val, i));
       });
 
     constant_exprt new_op(new_value, expr.type());
@@ -812,7 +812,7 @@ bool simplify_exprt::simplify_bitwise(exprt &expr)
     }
     else if(expr.id()==ID_bitxor)
     {
-      constant_exprt new_op(integer2bv(0, width), expr.type());
+      constant_exprt new_op(integer2bvrep(0, width), expr.type());
       expr.swap(new_op);
       return false;
     }
@@ -1279,7 +1279,7 @@ bool simplify_exprt::simplify_bitnot(exprt &expr)
       {
         const auto &value = to_constant_expr(op).get_value();
         const auto new_value = make_bvrep(width, [&value](std::size_t i) {
-          return !get_bitvector_bit(value, i);
+          return !get_bvrep_bit(value, i);
         });
         expr = constant_exprt(new_value, op.type());
         return false;
