@@ -337,6 +337,24 @@ public:
     return command(1);
   }
 
+  /// render text with faint font
+  static commandt faint()
+  {
+    return command(2);
+  }
+
+  /// render italic text
+  static commandt italic()
+  {
+    return command(3);
+  }
+
+  /// render underlined text
+  static commandt underline()
+  {
+    return command(4);
+  }
+
   mstreamt &get_mstream(unsigned message_level) const
   {
     mstream.message_level=message_level;
