@@ -51,9 +51,19 @@ void show_goto_functions(
 
   case ui_message_handlert::uit::PLAIN:
     {
+      // sort alphabetically
+      std::vector<std::string> function_ids;
+      function_ids.reserve(goto_functions.function_map.size());
+
       for(const auto &fun : goto_functions.function_map)
+        function_ids.push_back(id2string(fun.first));
+
+      std::sort(function_ids.begin(), function_ids.end());
+
+      for(const auto &f_id : function_ids)
       {
-        const symbolt &symbol = ns.lookup(fun.first);
+        const symbolt &symbol = ns.lookup(f_id);
+        const auto &fun = *goto_functions.function_map.find(f_id);
 
         if(list_only)
         {
